@@ -11,9 +11,9 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def decode(code):
+def get_column(code):
     val = 0
-    for ch in code: # base-26 decoding "plus 1"
+    for ch in code:
         val = val * 26 + ord(ch) - ord("A") + 1 
     return val - 1
 
@@ -100,7 +100,7 @@ class Board:
 
             # Convert the row and column inputs to integer indices
             row = int(row_input) - 1
-            col = string.ascii_uppercase.index(col_input.upper())
+            col = get_column(col_input)
 
             if self.is_valid_move(row, col):
                 if other_board.board[row][col] == 'S':
@@ -117,8 +117,8 @@ class Board:
 
 def play_game():
     # initialize the boards
-    board1 = Board(40, 5)
-    board2 = Board(40, 5)
+    board1 = Board(100, 5)
+    board2 = Board(100, 5)
 
     # main game loop
     while True:

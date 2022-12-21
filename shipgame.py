@@ -1,10 +1,15 @@
 import random
 import os
-import string
 import colorama
-import math
-
+import configparser
 # clear the console screen
+
+config = configparser.ConfigParser()
+config.read('configuration.ini')
+board_size = config.getint('game', 'board_size')
+ship_names = config.get('game', 'ship_names').split(',')
+ship_sizes = config.get('game', 'ship_sizes').split(',')
+ship_sizes = [int(size) for size in ship_sizes]
 
 
 def clear_screen():
@@ -14,15 +19,16 @@ def clear_screen():
 def get_column(code):
     val = 0
     for ch in code:
-        val = val * 26 + ord(ch) - ord("A") + 1 
+        val = val * 26 + ord(ch) - ord("A") + 1
     return val - 1
 
 # define a Ship class to represent each ship
 
 
 class Ship:
-    def __init__(self, length):
+    def __init__(self, length, name):
         self.length = length
+        self.name = name
         self.sunk = False
 
     def is_sunk(self):
@@ -46,13 +52,71 @@ class Board:
 
         self.ships = []
         for i in range(num_ships):
-            self.ships.append(Ship(random.randint(1, size)))
+            self.ships.append(Ship(ship_sizes[i], ship_names[i]))
 
     def is_game_over(self):
         for ship in self.ships:
             if not ship.is_sunk():
                 return False
         return True
+
+    def place_ships(self):
+        # Place each ship on the board
+        for ship in self.ships:
+            valid_placement = False
+            while not valid_placement:
+                # Print the board and the ship placement prompt
+                self.print_board()
+                print("Enter placement for ship %s (length %d):" % (ship.name, ship.length))
+                row_input = input("Enter row: ")
+                col_input = input("Enter col: ").upper()
+
+                # Convert the row and column inputs to integer indices
+                row = int(row_input) - 1
+                col = get_column(col_input)
+                orientation = input("Enter orientation (H or V): ").upper()
+
+                # Check if the placement is valid
+                if orientation == 'H':
+                    if col + ship.length > self.size:
+                        print("Invalid placement. Try again.")
+                        continue
+                    for i in range(ship.length):
+                        if self.board[row][col + i] == 'S':
+                            print("Invalid placement. Try again.")
+                            break
+                    else:
+                        # Place the ship on the board
+                        for i in range(ship.length):
+                            self.board[row][col + i] = 'S'
+                        valid_placement = True
+                elif orientation == 'V':
+                    if row + ship.length > self.size:
+                        print("Invalid placement. Try again.")
+                        continue
+                    for i in range(ship.length):
+                        if self.board[row + i][col] == 'S':
+                            print("Invalid placement. Try again.")
+                            break
+                    else:
+                        # Place the ship on the board
+                        for i in range(ship.length):
+                            self.board[row + i][col] = 'S'
+                        valid_placement = True
+                else:
+                    print("Invalid orientation. Try again.")
+
+                # Clear the screen
+                clear_screen()
+
+    def print_ships(self):
+        # Print the column labels
+        print('  ' + ' '.join(chr(ord('A') + i) for i in range(self.size)))
+
+        # Print each row with its corresponding row number and the ship cells
+        for i, row in enumerate(self.board):
+            print(str(i + 1) + ' ' + ' '.join(cell if cell !=
+                  'S' else '#' for cell in row))
 
     def print_board(self):
         colorama.init()
@@ -96,7 +160,7 @@ class Board:
             print("Player %d's turn:" % player)
             other_board.print_board()
             row_input = input("Enter row: ")
-            col_input = input("Enter col: ")
+            col_input = input("Enter col: ").upper()
 
             # Convert the row and column inputs to integer indices
             row = int(row_input) - 1
@@ -117,24 +181,28 @@ class Board:
 
 def play_game():
     # initialize the boards
-    board1 = Board(100, 5)
-    board2 = Board(100, 5)
+    board1 = Board(board_size, len(ship_sizes))
+    board2 = Board(board_size, len(ship_sizes))
+
+    board1.place_ships()
+    board2.place_ships()
 
     # main game loop
     while True:
         # player 1's turn
         board1.handle_move(1, board2)
         board2.print_board()
+        board1.print_ships()  # Print the ships for player 1
         # check if the game is over
         if board1.is_game_over() or board2.is_game_over():
             break
+        clear_screen()
 
         # player 2's turn
-
         board2.handle_move(2, board1)
         board1.print_board()
-
-    # check if the game is over
+        board2.print_ships()  # Print the ships for player 2
+        # check if the game is over
         if board1.is_game_over() or board2.is_game_over():
             break
         clear_screen()
@@ -142,8 +210,12 @@ def play_game():
     # print the final boards
     print("Player 1's board:")
     board1.print_board()
+    print("Player 1's ships:")
+    board1.print_ships()
     print("Player 2's board:")
     board2.print_board()
+    print("Player 2's ships:")
+    board2.print_ships()
 
 
 # start the game

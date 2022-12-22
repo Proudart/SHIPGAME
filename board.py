@@ -4,6 +4,7 @@ import random
 import time
 from ship import Ship
 from universal import clear_screen, get_column
+import sys
 
 # read configuration settings from configuration.ini file
 config = configparser.ConfigParser()
@@ -143,19 +144,21 @@ class Board:
                     while True:
                         try:
                             row_input = input("Enter row: ").upper()
+                            if row_input == 'QUIT':
+                                sys.exit()
                             if row_input == 'AUTO' or int(row_input) in range(1, self.size + 1):
                                 break
                             clear_screen()
                             self.print_ships()
                             print("Enter placement for ship %s (length %d):" % (
                                 ship.name, ship.length), "<Enter AUTO to place automatically>")
-                            print("Invalid input. Try again.")
+                            print("Invalid input. Try again. Enter QUIT to leave")
                         except:
                             clear_screen()
                             self.print_ships()
                             print("Enter placement for ship %s (length %d):" % (
                                 ship.name, ship.length), "<Enter AUTO to place automatically>")
-                            print("Invalid input. Try again.")
+                            print("Invalid input. Try again. Enter QUIT to leave")
 
                     if row_input == 'AUTO':
                         self.auto_place_ship(ship)
@@ -165,19 +168,21 @@ class Board:
                     while True:
                         try:
                             col_input = input("Enter col: ").upper()
-                            if row_input == 'AUTO' or get_column(col_input) in range(self.size):
+                            if col_input == 'QUIT':
+                                sys.exit()
+                            if col_input == 'AUTO' or get_column(col_input) in range(self.size):
                                 break
                             clear_screen()
                             self.print_ships()
                             print("Enter placement for ship %s (length %d):" % (
                                 ship.name, ship.length), "<Enter AUTO to place automatically>")
-                            print("Invalid input. Try again.")
+                            print("Invalid input. Try again. Enter QUIT to leave")
                         except:
                             clear_screen()
                             self.print_ships()
                             print("Enter placement for ship %s (length %d):" % (
                                 ship.name, ship.length), "<Enter AUTO to place automatically>")
-                            print("Invalid input. Try again.")
+                            print("Invalid input. Try again. Enter QUIT to leave")
                     if col_input == 'AUTO':
                         self.auto_place_ship(ship)
                         clear_screen()
@@ -349,34 +354,38 @@ class Board:
                 while True:
                     try:
                         row_input = input("Enter row: ").upper()
+                        if row_input == 'QUIT':
+                                sys.exit()
                         if int(row_input) in range(1, self.size + 1):
                             break
                         clear_screen()
                         self.print_board()
-                        print("Invalid input. Max is %d. Try again." %
+                        print("Invalid input. Max is %d. Try again. Enter QUIT to leave" %
                               self.size)
                     except:
                         clear_screen()
                         self.print_board()
-                        print("Invalid input. Max is %d. Try again." %
+                        print("Invalid input. Max is %d. Try again. Enter QUIT to leave" %
                               self.size)
 
                 while True:
                     try:
                         col_input = input("Enter col: ").upper()
+                        if col_input == 'QUIT':
+                                sys.exit()
                         if get_column(col_input) in range(self.size):
                             break
                         clear_screen()
                         self.print_board()
                         print("Invalid input. Max is " +
-                              column_label + " Try again.")
+                              column_label + " Try again. Enter QUIT to leave")
 
                     except:
                         clear_screen()
                         self.print_board()
 
                         print("Invalid input. Max is " +
-                              column_label + " Try again.")
+                              column_label + " Try again. Enter QUIT to leave")
 
                 # Convert the row and column inputs to integer indices
                 row = int(row_input) - 1

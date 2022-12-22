@@ -17,7 +17,16 @@ def play_game():
 
     clear_screen()
     print("Welcome to Battleship!")
+    print("<Rules/Instructions>")
+    print("<Hit the enemy and destroy their ships before they destroy your ships>")
+    print("<Guessing the location of the enemy ship will give you another go>")
+    print("<Have fun and no looking during placement phase>")
+    print("")
+    input("Press enter to continue")
     # menu
+
+    clear_screen()
+
     while True:
         try:
             print("<1. Player vs Player>")

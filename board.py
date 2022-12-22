@@ -136,6 +136,7 @@ class Board:
         if choice == 'Player':
             for ship in self.ships:
                 valid_placement = False
+                exit = False
                 while not valid_placement:
                     # Print the board and the ship placement prompt
                     self.print_ships()
@@ -145,7 +146,8 @@ class Board:
                         try:
                             row_input = input("Enter row: ").upper()
                             if row_input == 'QUIT':
-                                sys.exit()
+                                exit = True
+                                break
                             if row_input == 'AUTO' or int(row_input) in range(1, self.size + 1):
                                 break
                             clear_screen()
@@ -159,6 +161,9 @@ class Board:
                             print("Enter placement for ship %s (length %d):" % (
                                 ship.name, ship.length), "<Enter AUTO to place automatically>")
                             print("Invalid input. Try again. Enter QUIT to leave")
+                    if exit:
+                        quit()
+                        
 
                     if row_input == 'AUTO':
                         self.auto_place_ship(ship)
@@ -169,7 +174,8 @@ class Board:
                         try:
                             col_input = input("Enter col: ").upper()
                             if col_input == 'QUIT':
-                                sys.exit()
+                                exit = True
+                                break
                             if col_input == 'AUTO' or get_column(col_input) in range(self.size):
                                 break
                             clear_screen()
@@ -187,6 +193,8 @@ class Board:
                         self.auto_place_ship(ship)
                         clear_screen()
                         break
+                    if exit:
+                        quit()
 
                     # Convert the row and column inputs to integer indices
                     row = int(row_input) - 1
@@ -355,7 +363,8 @@ class Board:
                     try:
                         row_input = input("Enter row: ").upper()
                         if row_input == 'QUIT':
-                                sys.exit()
+                                exit = True
+                                break
                         if int(row_input) in range(1, self.size + 1):
                             break
                         clear_screen()
@@ -367,12 +376,14 @@ class Board:
                         self.print_board()
                         print("Invalid input. Max is %d. Try again. Enter QUIT to leave" %
                               self.size)
-
+                if exit:
+                        quit()
                 while True:
                     try:
                         col_input = input("Enter col: ").upper()
                         if col_input == 'QUIT':
-                                sys.exit()
+                                exit = True
+                                break
                         if get_column(col_input) in range(self.size):
                             break
                         clear_screen()
@@ -386,7 +397,8 @@ class Board:
 
                         print("Invalid input. Max is " +
                               column_label + " Try again. Enter QUIT to leave")
-
+                if exit:
+                        quit()
                 # Convert the row and column inputs to integer indices
                 row = int(row_input) - 1
                 col = get_column(col_input)

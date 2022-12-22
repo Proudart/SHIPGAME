@@ -76,42 +76,43 @@ class Board:
         bool: True if the ship was placed successfully, False otherwise.
         """
         for i in range(len(self.ships)):
-            row = random.randint(0, self.size - 1)
-            col = random.randint(0, self.size - 1)
-            direction = random.choice(['H', 'V'])
-            if direction == 'H':
-                if col + ship.length > self.size:
-                    continue
-                valid_placement = True
-                for i in range(ship.length):
-                    if any(icon in self.ship_board[row][col + i] for icon in ship_icons):
-                        valid_placement = False
-                        break
-                if valid_placement:
-                    # Place the ship horizontally
-                    for i in range(ship.length):
-                        self.ship_board[row][col + i] = ship.icon
-                    ship.row = row
-                    ship.col = col
-                    ship.direction = 'H'
-                    return True
-            else:
-                if row + ship.length > self.size:
-                    continue
-                valid_placement = True
-                for i in range(ship.length):
-                    if any(icon in self.ship_board[row + i][col] for icon in ship_icons):
-                        valid_placement = False
-                        break
+            while True:
+                row = random.randint(0, self.size - 1)
+                col = random.randint(0, self.size - 1)
+                direction = random.choice(['H', 'V'])
+                if direction == 'H':
+                    if col + ship.length > self.size:
+                        continue
                     valid_placement = True
-                if valid_placement:
-                    # Place the ship vertically
                     for i in range(ship.length):
-                                self.ship_board[row + i][col] = ship.icon
-                    ship.row = row
-                    ship.col = col
-                    ship.direction = 'V'
-                    return True
+                        if any(icon in self.ship_board[row][col + i] for icon in ship_icons):
+                            valid_placement = False
+                            break
+                    if valid_placement:
+                        # Place the ship horizontally
+                        for i in range(ship.length):
+                            self.ship_board[row][col + i] = ship.icon
+                        ship.row = row
+                        ship.col = col
+                        ship.direction = 'H'
+                        return True
+                else:
+                        if row + ship.length > self.size:
+                            continue
+                        valid_placement = True
+                        for i in range(ship.length):
+                            if any(icon in self.ship_board[row + i][col] for icon in ship_icons):
+                                valid_placement = False
+                                break
+                            valid_placement = True
+                        if valid_placement:
+                            # Place the ship vertically
+                            for i in range(ship.length):
+                                        self.ship_board[row + i][col] = ship.icon
+                            ship.row = row
+                            ship.col = col
+                            ship.direction = 'V'
+                            return True
         # If automatic placement failed, return False
         return False
 
@@ -341,7 +342,7 @@ class Board:
         message = False
         while comeback == True:
             clear_screen()
-            other_board.print_ships()
+            self.print_board()
             if message:
                 print(message)
             if choice == '1':

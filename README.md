@@ -1,9 +1,46 @@
 # AdaShip
 Ada advanced programming project
-
-
-
 This code shows a battleship game made by Deividas Dapkus for advance progrmaing module part 2.
+
+This is a Python implementation of the classic board game, Battleship.
+
+uml diagram = Ada_battleship_uml.png
+unittest = shipgame_unittests.py
+
+Initial plan
+
+
+
+Development
+
+Evaluation
+
+
+
+Requirements
+Python 3
+colorama (for coloring text in the terminal)
+configparser (for reading configuration settings from a file)
+
+Setup
+Clone the repository to your local machine.
+Install the required packages by running pip install -r requirements.txt in the terminal.
+Create a file called configuration.ini in the root directory of the project and define the following settings:
+board_size: the dimensions of the board (must be an integer)
+ship_names: a comma-separated list of names for the ships (must be strings)
+ship_sizes: a comma-separated list of sizes for the ships (must be integers)
+ship_icons: a comma-separated list of single-character icons to represent the ships on the board (must be strings)
+
+Running the game
+To start the game, run the following command in the terminal:
+python shipgame.py
+You will be prompted to choose whether you or the computer will place the ships on the board. Follow the on-screen instructions to place your ships.
+
+Once the ships have been placed, the game will begin. You and another player or the computer will take turns entering coordinates to attack. The game will end when all of one player's ships have been sunk.
+
+Customizing the game
+You can customize the game by modifying the settings in the configuration.ini file. Change the board_size to adjust the dimensions of the board, and change the ship_names, ship_sizes, and ship_icons to customize the ships in the game. Make sure to match the lengths of the ship_names, ship_sizes, and ship_icons lists, as each ship's name, size, and icon should be in the same index in their respective lists.
+
 
 The Ship class has the following attributes:
 

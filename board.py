@@ -4,7 +4,6 @@ import random
 import time
 from ship import Ship
 from universal import clear_screen, get_column
-import sys
 
 # read configuration settings from configuration.ini file
 config = configparser.ConfigParser()
@@ -15,11 +14,8 @@ ship_sizes = config.get('game', 'ship_sizes').split(',')
 ship_sizes = [int(size) for size in ship_sizes]
 ship_icons = config.get('game', 'ship_icons').split(',')
 
-# class representing a ship in the game
 
 # class representing the game board
-
-
 class Board:
     def __init__(self, size, num_ships):
         """
@@ -68,7 +64,7 @@ class Board:
         Try to place the ship on the board automatically by randomly selecting a
         location and direction for the ship and checking if it is a valid placement.
         If the placement is valid, it places the ship and returns True. If it is not
-        able to find a valid placement after 100 attempts, it returns False.
+        able to find a valid placement it will retry.
 
         Parameters:
         ship (Ship): The ship to be placed on the board.
@@ -170,6 +166,7 @@ class Board:
                         print("Ship placed automatically.")
                         clear_screen()
                         break
+                    exit = False
                     while True:
                         try:
                             col_input = input("Enter col: ").upper()
@@ -199,6 +196,7 @@ class Board:
                     # Convert the row and column inputs to integer indices
                     row = int(row_input) - 1
                     col = get_column(col_input)
+                    exit = False
                     while True:
                         try:
                             orientation = input(
@@ -359,6 +357,7 @@ class Board:
             if message:
                 print(message)
             if choice == '1':
+                exit = False
                 while True:
                     try:
                         row_input = input("Enter row: ").upper()
@@ -378,6 +377,7 @@ class Board:
                               self.size)
                 if exit:
                         quit()
+                exit = False
                 while True:
                     try:
                         col_input = input("Enter col: ").upper()

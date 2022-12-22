@@ -1,3 +1,4 @@
+# class representing a ship in the game
 class Ship:
     def __init__(self, length, name, icon, row, col, direction):
         self.length = length  # length of the ship

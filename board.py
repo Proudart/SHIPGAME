@@ -97,22 +97,22 @@ class Board:
                         ship.direction = 'H'
                         return True
                 else:
-                        if row + ship.length > self.size:
-                            continue
+                    if row + ship.length > self.size:
+                        continue
+                    valid_placement = True
+                    for i in range(ship.length):
+                        if any(icon in self.ship_board[row + i][col] for icon in ship_icons):
+                            valid_placement = False
+                            break
                         valid_placement = True
+                    if valid_placement:
+                        # Place the ship vertically
                         for i in range(ship.length):
-                            if any(icon in self.ship_board[row + i][col] for icon in ship_icons):
-                                valid_placement = False
-                                break
-                            valid_placement = True
-                        if valid_placement:
-                            # Place the ship vertically
-                            for i in range(ship.length):
-                                        self.ship_board[row + i][col] = ship.icon
-                            ship.row = row
-                            ship.col = col
-                            ship.direction = 'V'
-                            return True
+                            self.ship_board[row + i][col] = ship.icon
+                        ship.row = row
+                        ship.col = col
+                        ship.direction = 'V'
+                        return True
         # If automatic placement failed, return False
         return False
 

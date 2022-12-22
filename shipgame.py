@@ -122,6 +122,7 @@ def play_game():
         if board1.is_game_over() or board2.is_game_over():
             break
 
+
 # start the game
 if __name__ == '__main__':
     play_game()

@@ -126,7 +126,7 @@ b. The code could be examined for chances to employ design patterns or other pro
 
 Some examples of advanced techniques is the use of classes:
 class Board:
-    def __init__(self, size, num_ships):
+    def _init__(self, size, num_ships):
         """
         Constructor for the Board class. Initializes the size of the board, creates
         empty boards for the attack and ship locations, and creates a list of Ship
@@ -397,9 +397,6 @@ You can customize the game by modifying the settings in the configuration.ini fi
   
 
 The Ship class has the following attributes:
-
-  
-
  - length: an integer representing the length of the ship
  - name: a string representing the name of the ship
  - sunk: a boolean indicating whether the ship has been sunk or not
@@ -412,8 +409,6 @@ The Ship class has the following attributes:
 
 
  The Board class has the following attributes:
-
-  
 
  - size: an integer representing the size of the board, i.e. the number
    of rows and columns
@@ -428,43 +423,18 @@ The Ship class has the following attributes:
 
 The Board class has several methods:
 
-  
-
  - print_ship: prints the name and length of each ship on the board
-   
  - is_game_over: returns True if all ships on the board have been sunk, 
    and False otherwise
-
-   
- 
-
  - auto_place_ship: attempts to place a given ship on the board   
    automatically by first trying to place it horizontally, and if that  
    fails, trying to place it vertically
-
-   
-
  - place_ships: prompts the player to enter the placement for each ship 
    on the board or to place the ship automatically
-
-   
-
  - print_ships: prints the board with the ships placed on it
-
-   
-
  - print_board: prints the board with the attacks made on it
-
-   
-
  - is_valid_move: checks if a given move is a valid attack on the board
-
-   
-
  - play_move: makes an attack on the board and updates the board and   
    ship states accordingly
-
-   
-
  - play_game: the main game loop that handles player input, validation, 
    and game updates until the game is over.

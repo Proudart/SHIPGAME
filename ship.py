@@ -5,7 +5,8 @@ class Ship:
         self.sunk = False  # whether the ship has been sunk
         self.row = row  # row the ship is located on
         self.col = col  # column the ship is located on
-        self.direction = direction  # direction the ship is facing (H for horizontal, V for vertical)
+        # direction the ship is facing (H for horizontal, V for vertical)
+        self.direction = direction
         self.health = length  # current health of the ship
         self.icon = icon  # icon representing the ship on the board
 

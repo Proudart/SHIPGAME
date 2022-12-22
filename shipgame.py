@@ -10,7 +10,8 @@ board_size = config.getint('game', 'board_size')
 ship_names = config.get('game', 'ship_names').split(',')
 ship_sizes = config.get('game', 'ship_sizes').split(',')
 ship_sizes = [int(size) for size in ship_sizes]
-
+ship_icons = config.get('game', 'ship_icons').split(',')
+print(ship_icons)
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -26,19 +27,24 @@ def get_column(code):
 
 
 class Ship:
-    def __init__(self, length, name, row, col, direction):
+    def __init__(self, length, name,icon, row, col, direction):
         self.length = length
         self.name = name
         self.sunk = False
         self.row = row
         self.col = col
         self.direction = direction
+        self.health = length
+        self.icon = icon
 
     def is_sunk(self):
         return self.sunk
 
-    def sink(self):
-        self.sunk = True
+    def hit(self):
+        self.health -= 1
+        if self.health == 0:
+            self.sunk = True
+
 
 # define a Board class to represent the game board
 
@@ -62,8 +68,8 @@ class Board:
             self.ship_board.append(row)
         self.ships = []
         for i in range(num_ships):
-            self.ships.append(Ship(ship_sizes[i], ship_names[i], 0, 0, 'H'))
-    
+            self.ships.append(Ship(ship_sizes[i], ship_names[i], ship_icons[i], 0, 0, 'H'))
+
     def print_ship(self):
         for i in range(len(self.ships)):
             print(self.ships[i].name, self.ships[i].length)
@@ -80,13 +86,13 @@ class Board:
             for col in range(self.size - ship.length + 1):
                 valid_placement = True
                 for i in range(ship.length):
-                    if self.ship_board[row][col + i] == 'S':
+                    if any(icon in self.ship_board[row][col + i] for icon in ship_icons):
                         valid_placement = False
                         break
                 if valid_placement:
                     # Place the ship horizontally
                     for i in range(ship.length):
-                        self.ship_board[row][col + i] = 'S'
+                        self.ship_board[row][col + i] = ship.icon
                     ship.row = row
                     ship.col = col
                     ship.direction = 'H'
@@ -146,7 +152,7 @@ class Board:
 
                             continue
                         for i in range(ship.length):
-                            if self.ship_board[row][col + i] == 'S':
+                            if any(icon in self.ship_board[row][col + i] for icon in ship_icons):
                                 print("Invalid placement. Try again.")
                                 clear_screen()
 
@@ -154,7 +160,7 @@ class Board:
                         else:
                             # Place the ship on the board
                             for i in range(ship.length):
-                                self.ship_board[row][col + i] = 'S'
+                                self.ship_board[row][col + i] = ship.icon
 
                             valid_placement = True
                     elif orientation == 'V':
@@ -172,7 +178,7 @@ class Board:
                         else:
                             # Place the ship on the board
                             for i in range(ship.length):
-                                self.ship_board[row + i][col] = 'S'
+                                self.ship_board[row + i][col] = ship.icon
                             valid_placement = True
                             clear_screen()
 
@@ -185,22 +191,6 @@ class Board:
                 if not self.auto_place_ship(ship):
                     print("Error: automatic ship placement failed.")
                     return False
-        
-    def hide_ships(self):
-        print("SHIPSSS")
-        self.print_ships()
-        self.print_board()
-        print("SHIPSSS2")
-
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.board[i][j] == 'S':
-                    self.board[i][j] = '-'
-        
-        print("WIPED")
-        self.print_ships()
-        self.print_board()
-        print("WIPED2")
 
     def print_ships(self):
         colorama.init()
@@ -271,13 +261,10 @@ class Board:
 
     def handle_move(self, player, other_board):
 
-
         print("Player %d's turn:" % player)
 
-
         comeback = True
-        
-        
+
         while comeback == True:
 
             self.print_board()
@@ -291,14 +278,14 @@ class Board:
             row = int(row_input) - 1
             col = get_column(col_input)
 
-            if other_board.ship_board[row][col] == 'S':
+            if any(icon in ship_icons for icon in other_board.ship_board[row][col]) and self.board[row][col] != 'H':
                 self.board[row][col] = 'H'
                 self.check_hit(row, col)
                 if self.is_game_over():
                     self.print_board()
                     print("Game over! You won!")
                     comeback = False
-                    return True  
+                    return True
                 else:
                     self.print_board()
                     print("Hit!")
@@ -317,15 +304,15 @@ class Board:
     def check_hit(self, row, col):
         for ship in self.ships:
             if ship.row == row and ship.col == col:
-                ship.sink()
+                ship.hit()
                 return
             elif ship.direction == 'H':
                 if ship.row == row and col in range(ship.col, ship.col + ship.length):
-                    ship.sink()
+                    ship.hit()
                     return
             elif ship.direction == 'V':
                 if col == ship.col and row in range(ship.row, ship.row + ship.length):
-                    ship.sink()
+                    ship.hit()
                     return
 
 # define the game loop
@@ -356,9 +343,9 @@ def play_game():
     # place the ships on the boards
 
     board1.place_ships(choice1)
-    #board1.hide_ships()
+    # board1.hide_ships()
     board2.place_ships(choice2)
-    #board2.hide_ships()
+    # board2.hide_ships()
 
     # main game loop
     print("All ships placed. Let's play!")

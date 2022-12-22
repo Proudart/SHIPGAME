@@ -2,6 +2,7 @@ import random
 import os
 import colorama
 import configparser
+import time
 # clear the console screen
 
 config = configparser.ConfigParser()
@@ -11,7 +12,7 @@ ship_names = config.get('game', 'ship_names').split(',')
 ship_sizes = config.get('game', 'ship_sizes').split(',')
 ship_sizes = [int(size) for size in ship_sizes]
 ship_icons = config.get('game', 'ship_icons').split(',')
-print(ship_icons)
+
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -27,7 +28,7 @@ def get_column(code):
 
 
 class Ship:
-    def __init__(self, length, name,icon, row, col, direction):
+    def __init__(self, length, name, icon, row, col, direction):
         self.length = length
         self.name = name
         self.sunk = False
@@ -68,11 +69,8 @@ class Board:
             self.ship_board.append(row)
         self.ships = []
         for i in range(num_ships):
-            self.ships.append(Ship(ship_sizes[i], ship_names[i], ship_icons[i], 0, 0, 'H'))
-
-    def print_ship(self):
-        for i in range(len(self.ships)):
-            print(self.ships[i].name, self.ships[i].length)
+            self.ships.append(
+                Ship(ship_sizes[i], ship_names[i], ship_icons[i], 0, 0, 'H'))
 
     def is_game_over(self):
         for ship in self.ships:
@@ -118,6 +116,8 @@ class Board:
         return False
 
     def place_ships(self, choice):
+
+        clear_screen()
         # Place each ship on the board
         if choice == 'Player':
             for ship in self.ships:
@@ -127,13 +127,44 @@ class Board:
                     self.print_ships()
                     print("Enter placement for ship %s (length %d):" % (
                         ship.name, ship.length), "<Enter AUTO to place automatically>")
-                    row_input = input("Enter row: ").upper()
+                    while True:
+                        try:
+                            row_input = input("Enter row: ").upper()
+                            if row_input == 'AUTO' or int(row_input) in range(1, self.size + 1):
+                                break
+                            clear_screen()
+                            self.print_ships()
+                            print("Enter placement for ship %s (length %d):" % (
+                                ship.name, ship.length), "<Enter AUTO to place automatically>")
+                            print("Invalid input. Try again.")
+                        except:
+                            clear_screen()
+                            self.print_ships()
+                            print("Enter placement for ship %s (length %d):" % (
+                                ship.name, ship.length), "<Enter AUTO to place automatically>")
+                            print("Invalid input. Try again.")
+
                     if row_input == 'AUTO':
                         self.auto_place_ship(ship)
                         print("Ship placed automatically.")
                         clear_screen()
                         break
-                    col_input = input("Enter col: ").upper()
+                    while True:
+                        try:
+                            col_input = input("Enter col: ").upper()
+                            if row_input == 'AUTO' or get_column(col_input) in range(self.size):
+                                break
+                            clear_screen()
+                            self.print_ships()
+                            print("Enter placement for ship %s (length %d):" % (
+                                ship.name, ship.length), "<Enter AUTO to place automatically>")
+                            print("Invalid input. Try again.")
+                        except:
+                            clear_screen()
+                            self.print_ships()
+                            print("Enter placement for ship %s (length %d):" % (
+                                ship.name, ship.length), "<Enter AUTO to place automatically>")
+                            print("Invalid input. Try again.")
                     if col_input == 'AUTO':
                         self.auto_place_ship(ship)
                         clear_screen()
@@ -142,7 +173,20 @@ class Board:
                     # Convert the row and column inputs to integer indices
                     row = int(row_input) - 1
                     col = get_column(col_input)
-                    orientation = input("Enter orientation (H or V): ").upper()
+                    while True:
+                        try:
+                            orientation = input(
+                                "Enter orientation (H or V): ").upper()
+                            if orientation in ['H', 'V']:
+                                break
+                            clear_screen()
+                            self.print_ships()
+
+                            print("Invalid input. Try again.")
+                        except:
+                            clear_screen()
+                            self.print_ships()
+                            print("Invalid input. Try again.")
 
                     # Check if the placement is valid
                     if orientation == 'H':
@@ -246,7 +290,7 @@ class Board:
 
         # Print the rows of the board with their corresponding row numbers
         for i, row in enumerate(self.board):
-            print(colorama.Fore.RED + str(i + 1).rjust(max_width) +
+            print(colorama.Fore.GREEN + str(i + 1).rjust(max_width) +
                   colorama.Style.RESET_ALL, end=' ')
             for j in range(self.size):
                 print(str(row[j]).rjust(max_width), end=' ')
@@ -259,36 +303,87 @@ class Board:
             return False
         return self.board[row][col] != 'S'
 
-    def handle_move(self, player, other_board):
-
+    def handle_move(self, player, other_board, choice):
         print("Player %d's turn:" % player)
 
+        column_number = self.size
+        column_label = ""
+
+        while column_number > 0:
+            column_label = chr((column_number - 1) %
+                               26 + ord('A')) + column_label
+            column_number = (column_number - 1) // 26
+
         comeback = True
-
+        message = False
         while comeback == True:
-
+            clear_screen()
             self.print_board()
-
+            if message:
+                print(message)
             other_board.print_ships()
+            if choice == '1':
+                while True:
+                    try:
+                        row_input = input("Enter row: ").upper()
+                        if int(row_input) in range(1, self.size + 1):
+                            break
+                        clear_screen()
+                        self.print_board()
+                        print("Invalid input. Max is %d. Try again." %
+                              self.size)
+                    except:
+                        clear_screen()
+                        self.print_board()
+                        print("Invalid input. Max is %d. Try again." %
+                              self.size)
 
-            row_input = input("Enter row: ")
-            col_input = input("Enter col: ").upper()
+                while True:
+                    try:
+                        col_input = input("Enter col: ").upper()
+                        if get_column(col_input) in range(self.size):
+                            break
+                        clear_screen()
+                        self.print_board()
+                        print("Invalid input. Max is "+ column_label + " Try again.")
 
-            # Convert the row and column inputs to integer indices
-            row = int(row_input) - 1
-            col = get_column(col_input)
+                    except:
+                        clear_screen()
+                        self.print_board()
 
-            if any(icon in ship_icons for icon in other_board.ship_board[row][col]) and self.board[row][col] != 'H':
+                        print("Invalid input. Max is "+ column_label + " Try again.")
+
+                # Convert the row and column inputs to integer indices
+                row = int(row_input) - 1
+                col = get_column(col_input)
+            else:
+                time.sleep(1)
+                row = random.randint(0, self.size - 1)
+                col = random.randint(0, self.size - 1)
+
+            if any(icon in other_board.ship_board[row][col] for icon in ship_icons) and self.board[row][col] != 'H':
                 self.board[row][col] = 'H'
                 self.check_hit(row, col)
                 if self.is_game_over():
+                    clear_screen()
+                    print("Game over! You won! Player %d wins!" % player)
+                    print("Player %d's board:" % player)
                     self.print_board()
-                    print("Game over! You won!")
+
+                    print("Player %d's ships:" % player)
+                    self.print_ships()
+                    if player == 1:
+                        player = 2
+                    elif player == 2:
+                        player = 1
+                    print("Player %d's board:" % player)
+
+                    other_board.board()
                     comeback = False
                     return True
                 else:
                     self.print_board()
-                    print("Hit!")
+                    message = "Hit!"
                     comeback = True
             elif self.board[row][col] == 'H' or self.board[row][col] == 'M':
                 self.print_board()
@@ -319,27 +414,92 @@ class Board:
 
 
 def play_game():
-    # initialize the boards
-    board1 = Board(board_size, len(ship_sizes))
-    board2 = Board(board_size, len(ship_sizes))
 
-    # menu
-
+    clear_screen()
     print("Welcome to Battleship!")
-    print("1. Player vs Player")
-    print("2. Player vs Computer")
-    print("3. Quit")
-    choice = input("Enter your choice: ")
+    # menu
+    while True:
+        try:
+            print("<1. Player vs Player>")
+            print("<2. Player vs Computer>")
+            print("<3. Quit>")
+            choice = int(input("Enter your choice: "))
 
-    if choice == "1":
-        print("Player vs Player")
-        choice1 = "Player"
-        choice2 = "Player"
-    elif choice == "2":
-        print("Player vs Computer")
-        choice1 = "Player"
-        choice2 = "Computer"
+            if choice == 1:
+                print("Player vs Player")
+                choice1 = "Player"
+                choice2 = "Player"
+                break
+            elif choice == 2:
+                print("Player vs Computer")
+                choice1 = "Player"
+                choice2 = "Computer"
+                break
+            elif choice == 3:
+                print("Quit")
+                break
+            else:
+                clear_screen()
+                print("Invalid choice")
+        except:
+            clear_screen()
+            print("Invalid choice")
+            continue
 
+    clear_screen()
+    custom = False
+    while True:
+        try:
+            print("<1. Default Board Size 10x>")
+            print("<2. Custom Board Size>")
+            choice = int(input("Enter your choice: "))
+
+            if choice == 1:
+                print("Default")
+                custom = False
+                break
+            elif choice == 2:
+                print("Custom")
+                custom = True
+                break
+            else:
+                clear_screen()
+                print("Invalid choice")
+        except:
+            clear_screen()
+            print("Invalid choice")
+            continue
+
+    while custom:
+        try:
+
+            print("<Select the size of the ship default is 10>")
+            print("<Maximum is 80 Minimum is 5>")
+            size = int(input("Enter the size of the board: "))
+            print(size)
+            if size > 80:
+                size = 80
+                print("Board size is too big, defaulting to 80")
+            elif size < 5:
+                size = 5
+                print("Board size is too small, defaulting to 5")
+
+        except:
+
+            clear_screen()
+            print("Invalid input, try again")
+            continue
+
+        break
+
+    # initialize the boards
+    if custom:
+        board1 = Board(size, len(ship_sizes))
+        board2 = Board(size, len(ship_sizes))
+
+    else:
+        board1 = Board(board_size, len(ship_sizes))
+        board2 = Board(board_size, len(ship_sizes))
     # place the ships on the boards
 
     board1.place_ships(choice1)
@@ -352,29 +512,17 @@ def play_game():
     while True:
         # player 1's turn
 
-        board1.handle_move(1, board2)
-        clear_screen()
+        board1.handle_move(1, board2, "1")
         # check if the game is over
         if board1.is_game_over() or board2.is_game_over():
             break
 
         # player 2's turn
 
-        board2.handle_move(2, board1)
+        board2.handle_move(2, board1, choice1)
         # check if the game is over
         if board1.is_game_over() or board2.is_game_over():
             break
-        clear_screen()
-
-    # print the final boards
-    print("Player 1's board:")
-    board1.print_board()
-    print("Player 1's ships:")
-    board1.print_ships()
-    print("Player 2's board:")
-    board2.print_board()
-    print("Player 2's ships:")
-    board2.print_ships()
 
 
 # start the game

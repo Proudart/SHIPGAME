@@ -354,7 +354,6 @@ class Board:
         while comeback == True:
             clear_screen()
             self.print_board()
-            other_board.print_ships()
             if message:
                 print(message)
             if choice == '1':

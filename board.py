@@ -354,6 +354,7 @@ class Board:
         while comeback == True:
             clear_screen()
             self.print_board()
+            other_board.print_ships()
             if message:
                 print(message)
             if choice == '1':
@@ -409,8 +410,22 @@ class Board:
 
             if any(icon in other_board.ship_board[row][col] for icon in ship_icons) and self.board[row][col] != 'H':
                 self.board[row][col] = 'H'
-                self.check_hit(row, col)
-                if self.is_game_over():
+                other_board.check_hit(row, col)
+                
+                self.print_board()
+                message = "Hit!"
+                comeback = True
+            elif self.board[row][col] == 'H' or self.board[row][col] == 'M':
+                self.print_board()
+                print("You already guessed that location.")
+                comeback = True
+            else:
+                self.board[row][col] = 'M'
+                self.print_board()
+                print("Miss.")
+                comeback = False
+                return False
+            if other_board.is_game_over():
                     clear_screen()
                     print("Game over! You won! Player %d wins!" % player)
                     print("Player %d's board:" % player)
@@ -424,23 +439,9 @@ class Board:
                         player = 1
                     print("Player %d's board:" % player)
 
-                    other_board.board()
+                    other_board.print_board()
                     comeback = False
                     return True
-                else:
-                    self.print_board()
-                    message = "Hit!"
-                    comeback = True
-            elif self.board[row][col] == 'H' or self.board[row][col] == 'M':
-                self.print_board()
-                print("You already guessed that location.")
-                comeback = True
-            else:
-                self.board[row][col] = 'M'
-                self.print_board()
-                print("Miss.")
-                comeback = False
-                return False
 
     def check_hit(self, row, col):
         """
@@ -465,6 +466,6 @@ class Board:
                     ship.hit()
                     return
             elif ship.direction == 'V':
-                if col == ship.col and row in range(ship.row, ship.row + ship.length):
+                if col == ship.col and row in range(ship.row + ship.length , ship.row ):
                     ship.hit()
                     return
